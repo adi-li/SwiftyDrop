@@ -73,7 +73,7 @@ public final class Drop: UIView {
         self.duration = duration
         
         scheduleUpTimer(duration)
-        NotificationCenter.default.addObserver(self, selector: #selector(UIApplicationDelegate.applicationDidEnterBackground(_:)), name: NSNotification.Name.UIApplicationDidEnterBackground, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: .UIApplicationDidEnterBackground, object: nil)
     }
     
     override init(frame: CGRect) {
@@ -89,7 +89,7 @@ public final class Drop: UIView {
         NotificationCenter.default.removeObserver(self)
     }
     
-    func applicationDidEnterBackground(_ notification: Notification) {
+    @objc func applicationDidEnterBackground(_ notification: Notification) {
         stopUpTimer()
         removeFromSuperview()
     }
@@ -114,7 +114,7 @@ public final class Drop: UIView {
     
     fileprivate func scheduleUpTimer(_ after: Double, interval: Double) {
         stopUpTimer()
-        upTimer = Timer.scheduledTimer(timeInterval: after, target: self, selector: #selector(self.upFromTimer(_:)), userInfo: interval, repeats: false)
+        upTimer = Timer.scheduledTimer(timeInterval: after, target: self, selector: #selector(upFromTimer(_:)), userInfo: interval, repeats: false)
     }
     
     fileprivate func stopUpTimer() {
@@ -129,7 +129,7 @@ public final class Drop: UIView {
         height += statusLabel.frame.size.height
         height += statusBottomMargin
         heightConstraint?.constant = height > minimumHeight ? height : minimumHeight
-        self.layoutIfNeeded()
+        layoutIfNeeded()
     }
 }
 
@@ -143,7 +143,7 @@ extension Drop {
     }
 
     fileprivate class func show(_ status: String, state: DropStatable, duration: Double, action: DropAction?) {
-        self.upAll()
+        upAll()
         let drop = Drop(duration: duration)
         UIApplication.shared.keyWindow?.addSubview(drop)
         guard let window = drop.window else { return }
@@ -210,7 +210,7 @@ extension Drop {
 
 extension Drop {
     fileprivate func setup(_ status: String, state: DropStatable) {
-        self.translatesAutoresizingMaskIntoConstraints = false
+        translatesAutoresizingMaskIntoConstraints = false
         var labelParentView: UIView = self
         
         let backgroundView = UIView(frame: CGRect.zero)
@@ -271,18 +271,18 @@ extension Drop {
             ]
         )
         self.statusLabel = statusLabel
-        NotificationCenter.default.addObserver(self, selector: #selector(Drop.deviceOrientationDidChange(_:)), name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(deviceOrientationDidChange(_:)), name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
         
-        self.layoutIfNeeded()
-        self.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.up(_:))))
-        self.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(self.pan(_:))))
+        layoutIfNeeded()
+        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(up(_:))))
+        addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(pan(_:))))
     }
 }
 
 extension Drop {
     @objc func up(_ sender: AnyObject) {
         action?()
-        self.up()
+        up()
     }
     
     @objc func pan(_ sender: AnyObject) {
